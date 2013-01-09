@@ -12,4 +12,6 @@
 {% set view = view|default('tree') %}
 {% set depth = depth|default(0) %}
 
-{% include "FOSCommentBundle:Thread:comment_content.html.twig" %}
+{% if fos_comment_can_show_comment(comment) %}
+    {% include "FOSCommentBundle:Thread:comment_content.html.twig" %}
+{% endif %}

@@ -56,6 +56,8 @@ class FOSCommentExtension extends Extension
             $this->loadAcl($container, $config);
         }
 
+        $container->setParameter('fos_comment.moderate', $config['moderate']);
+
         $container->setParameter('fos_comment.template.engine', $config['template']['engine']);
 
         $container->setParameter('fos_comment.model.comment.class', $config['class']['model']['comment']);
@@ -86,8 +88,8 @@ class FOSCommentExtension extends Extension
         $container->setParameter('fos_comment.form.commentable_thread.type', $config['form']['commentable_thread']['type']);
         $container->setParameter('fos_comment.form.commentable_thread.name', $config['form']['commentable_thread']['name']);
 
-        $container->setParameter('fos_comment.form.delete_comment.type', $config['form']['delete_comment']['type']);
-        $container->setParameter('fos_comment.form.delete_comment.name', $config['form']['delete_comment']['name']);
+        $container->setParameter('fos_comment.form.state_comment.type', $config['form']['state_comment']['type']);
+        $container->setParameter('fos_comment.form.state_comment.name', $config['form']['state_comment']['name']);
 
         $container->setParameter('fos_comment.form.vote.type', $config['form']['vote']['type']);
         $container->setParameter('fos_comment.form.vote.name', $config['form']['vote']['name']);
@@ -96,7 +98,7 @@ class FOSCommentExtension extends Extension
 
         $container->setAlias('fos_comment.form_factory.comment', $config['service']['form_factory']['comment']);
         $container->setAlias('fos_comment.form_factory.commentable_thread', $config['service']['form_factory']['commentable_thread']);
-        $container->setAlias('fos_comment.form_factory.delete_comment', $config['service']['form_factory']['delete_comment']);
+        $container->setAlias('fos_comment.form_factory.state_comment', $config['service']['form_factory']['state_comment']);
         $container->setAlias('fos_comment.form_factory.thread', $config['service']['form_factory']['thread']);
         $container->setAlias('fos_comment.form_factory.vote', $config['service']['form_factory']['vote']);
 
@@ -120,11 +122,13 @@ class FOSCommentExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('acl.xml');
 
-        foreach (array(1 => 'create', 'view', 'edit', 'delete') as $index => $perm) {
+        foreach (array(1 => 'create', 'view', 'edit', 'delete',) as $index => $perm) {
             $container->getDefinition('fos_comment.acl.comment.roles')->replaceArgument($index, $config['acl_roles']['comment'][$perm]);
             $container->getDefinition('fos_comment.acl.thread.roles')->replaceArgument($index, $config['acl_roles']['thread'][$perm]);
             $container->getDefinition('fos_comment.acl.vote.roles')->replaceArgument($index, $config['acl_roles']['vote'][$perm]);
         }
+
+        $container->getDefinition('fos_comment.acl.comment.roles')->replaceArgument(5, $config['acl_roles']['comment']['moderate']);
 
         $container->setAlias('fos_comment.acl.thread', $config['service']['acl']['thread']);
         $container->setAlias('fos_comment.acl.comment', $config['service']['acl']['comment']);

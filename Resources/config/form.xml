@@ -36,15 +36,15 @@
             <argument>%fos_comment.form.commentable_thread.name%</argument>
         </service>
 
-        <service id="fos_comment.form_type.delete_comment.default" class="FOS\CommentBundle\Form\DeleteCommentType">
+        <service id="fos_comment.form_type.state_comment.default" class="FOS\CommentBundle\Form\StateCommentType">
             <argument>%fos_comment.model.comment.class%</argument>
-            <tag name="form.type" alias="fos_comment_delete_comment" />
+            <tag name="form.type" alias="fos_comment_state_comment" />
         </service>
 
-        <service id="fos_comment.form_factory.delete_comment.default" class="FOS\CommentBundle\FormFactory\DeleteCommentFormFactory" public="false">
+        <service id="fos_comment.form_factory.state_comment.default" class="FOS\CommentBundle\FormFactory\StateCommentFormFactory" public="false">
             <argument type="service" id="form.factory" />
-            <argument>%fos_comment.form.delete_comment.type%</argument>
-            <argument>%fos_comment.form.delete_comment.name%</argument>
+            <argument>%fos_comment.form.state_comment.type%</argument>
+            <argument>%fos_comment.form.state_comment.name%</argument>
         </service>
 
         <service id="fos_comment.form_type.thread.default" class="FOS\CommentBundle\Form\ThreadType">

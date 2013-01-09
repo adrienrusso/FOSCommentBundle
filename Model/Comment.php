@@ -204,6 +204,14 @@ abstract class Comment implements CommentInterface
     /**
      * {@inheritDoc}
      */
+    public function isState(array $states)
+    {
+        return in_array($this->getState(), $states);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getPreviousState()
     {
         return $this->previousState;

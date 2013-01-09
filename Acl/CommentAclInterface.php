@@ -62,6 +62,14 @@ interface CommentAclInterface
     public function canDelete(CommentInterface $comment);
 
     /**
+     * Checks if the user should be able to moderate a comment.
+     *
+     * @param  CommentInterface $comment
+     * @return boolean
+     */
+    public function canModerate(CommentInterface $comment);
+
+    /**
      * Sets the default Acl permissions on a comment.
      *
      * Note: this does not remove any existing Acl and should only
