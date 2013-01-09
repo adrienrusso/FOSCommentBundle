@@ -426,6 +426,12 @@ class ThreadController extends Controller
                 break;
         }
 
+        if ($this->container->getParameter("fos_comment.moderate")) {
+            $comments = array_filter($comments, function($element){
+                return $this->container->get('fos_comment.acl.comment.roles')->canModerate($element['comment']) || !$element['comment']->isState(array($element['comment']::STATE_PENDING));
+            });
+        }
+
         $view = View::create()
             ->setData(array(
                 'comments' => $comments,

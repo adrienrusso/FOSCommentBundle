@@ -50,7 +50,7 @@
             <argument>%fos_comment.model.thread.class%</argument>
         </service>
 
-        <service id="fos_comment.acl.comment.roles" class="FOS\CommentBundle\Acl\RoleCommentAcl" public="false">
+        <service id="fos_comment.acl.comment.roles" class="FOS\CommentBundle\Acl\RoleCommentAcl" public="true">
             <argument type="service" id="security.context" />
             <argument /> <!-- Create role -->
             <argument /> <!-- View role -->

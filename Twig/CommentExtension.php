@@ -29,12 +29,14 @@ class CommentExtension extends \Twig_Extension
     protected $commentAcl;
     protected $voteAcl;
     protected $threadAcl;
+    protected $moderate;
 
-    public function __construct(CommentAclInterface $commentAcl = null, VoteAclInterface $voteAcl = null, ThreadAclInterface $threadAcl = null)
+    public function __construct(CommentAclInterface $commentAcl = null, VoteAclInterface $voteAcl = null, ThreadAclInterface $threadAcl = null, $moderate = false)
     {
         $this->commentAcl = $commentAcl;
         $this->voteAcl    = $voteAcl;
         $this->threadAcl  = $threadAcl;
+        $this->moderate   = $moderate;
     }
 
     public function getTests()
@@ -97,7 +99,6 @@ class CommentExtension extends \Twig_Extension
             'fos_comment_can_vote'              => new \Twig_Function_Method($this, 'canVote'),
             'fos_comment_can_delete_comment'    => new \Twig_Function_Method($this, 'canDeleteComment'),
             'fos_comment_can_edit_comment'      => new \Twig_Function_Method($this, 'canEditComment'),
-            'fos_comment_can_show_comment'      => new \Twig_Function_Method($this, 'canShowComment'),
             'fos_comment_can_moderate_comment'  => new \Twig_Function_Method($this, 'canModerateComment'),
             'fos_comment_can_edit_thread'       => new \Twig_Function_Method($this, 'canEditThread'),
             'fos_comment_can_comment_thread'    => new \Twig_Function_Method($this, 'canCommentThread'),
@@ -165,17 +166,6 @@ class CommentExtension extends \Twig_Extension
         }
 
         return $this->commentAcl->canEdit($comment);
-    }
-
-    /**
-     * Checks if the current user is able to view a comment.
-     *
-     * @param CommentInterface $comment
-     *
-     * @return bool If the user is able to comment
-     */
-    public function canShowComment(CommentInterface $comment) {
-        return !$comment->isState(array($comment::STATE_PENDING)) && $this->commentAcl->canView($comment);
     }
 
     /**

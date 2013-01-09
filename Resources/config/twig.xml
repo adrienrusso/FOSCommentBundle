@@ -18,6 +18,7 @@
             <argument type="service" id="fos_comment.acl.comment" on-invalid="null" />
             <argument type="service" id="fos_comment.acl.vote" on-invalid="null" />
             <argument type="service" id="fos_comment.acl.thread" on-invalid="null" />
+            <argument>%fos_comment.moderate%</argument>
             <tag name="twig.extension" />
         </service>
     </services>
