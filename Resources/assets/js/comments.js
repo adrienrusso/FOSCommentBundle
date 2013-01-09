@@ -86,6 +86,29 @@
         },
 
         /**
+         * Shorcut put method.
+         *
+         * @param string url The url of the page to get.
+         * @param object data The query data.
+         * @param function success Optional callback function to use in case of succes.
+         * @param function error Optional callback function to use in case of error.
+         */
+        put: function(url, data, success, error) {
+            // Wrap the error callback to match return data between jQuery and easyXDM
+            var wrappedErrorCallback = function(response){
+                if('undefined' !== typeof error) {
+                    error(response.responseText, response.status);
+                }
+            };
+            $.ajax({
+                url: url,
+                type: "PUT",
+                data: data,
+                success: success
+            }).error(wrappedErrorCallback);
+        },
+
+        /**
          * Gets the comments of a thread and places them in the thread holder.
          *
          * @param string identifier Unique identifier url for the thread comments.
@@ -276,12 +299,12 @@
             );
 
             FOS_COMMENT.thread_container.on('click',
-                '.fos_comment_comment_remove',
+                '.fos_comment_comment_state',
                 function(e) {
                     var form_data = $(this).data();
 
                     // Get the form
-                    FOS_COMMENT.get(
+                    FOS_COMMENT.put(
                         form_data.url,
                         {},
                         function(data) {
