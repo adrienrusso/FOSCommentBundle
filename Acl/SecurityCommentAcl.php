@@ -145,6 +145,17 @@ class SecurityCommentAcl implements CommentAclInterface
     }
 
     /**
+     * Checks if the Security token is allowed to moderate the specified Comment.
+     *
+     * @param  CommentInterface $comment
+     * @return boolean
+     */
+    public function canModerate(CommentInterface $comment)
+    {
+        return $this->securityContext->isGranted('MODERATE', $comment);
+    }
+
+    /**
      * Sets the default object Acl entry for the supplied Comment.
      *
      * @param  CommentInterface $comment

@@ -250,7 +250,7 @@ class ThreadController extends Controller
      *
      * @return View
      */
-    public function removeThreadCommentAction(Request $request, $id, $commentId)
+    public function putThreadCommentStateAction(Request $request, $id, $commentId)
     {
         $thread = $this->container->get('fos_comment.manager.thread')->findThreadById($id);
         $comment = $this->container->get('fos_comment.manager.comment')->findCommentById($commentId);
@@ -259,14 +259,14 @@ class ThreadController extends Controller
             throw new NotFoundHttpException(sprintf("No comment with id '%s' found for thread with id '%s'", $commentId, $id));
         }
 
-        $form = $this->container->get('fos_comment.form_factory.delete_comment')->createForm();
-        $comment->setState($request->query->get('value', $comment::STATE_DELETED));
+        $form = $this->container->get('fos_comment.form_factory.state_comment')->createForm();
+        $comment->setState($request->query->get('value', $comment->getState()));
 
         $form->setData($comment);
 
         $view = View::create()
             ->setData(array('form' => $form, 'id' => $id, 'commentId' => $commentId))
-            ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment_remove'));
+            ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment_state'));
 
         return $this->getViewHandler()->handle($view);
     }
@@ -290,7 +290,7 @@ class ThreadController extends Controller
             throw new NotFoundHttpException(sprintf("No comment with id '%s' found for thread with id '%s'", $commentId, $id));
         }
 
-        $form = $this->container->get('fos_comment.form_factory.delete_comment')->createForm();
+        $form = $this->container->get('fos_comment.form_factory.state_comment')->createForm();
         $form->setData($comment);
 
         $form->bindRequest($request);
@@ -298,10 +298,10 @@ class ThreadController extends Controller
         if ($form->isValid()) {
             $manager->saveComment($comment);
 
-            return $this->getViewHandler()->handle($this->onRemoveThreadCommentSuccess($form, $id));
+            return $this->getViewHandler()->handle($this->onStateThreadCommentSuccess($form, $id));
         }
 
-        return $this->getViewHandler()->handle($this->onRemoveThreadCommentError($form, $id));
+        return $this->getViewHandler()->handle($this->onStateThreadCommentError($form, $id));
     }
 
     /**
@@ -475,6 +475,11 @@ class ThreadController extends Controller
         $form->bindRequest($this->container->get('request'));
 
         if ($form->isValid()) {
+
+            if ($this->container->getParameter("fos_comment.moderate")) {
+                $comment->setState($comment::STATE_PENDING);
+            }
+
             $commentManager->saveComment($comment);
 
             return $this->getViewHandler()->handle($this->onCreateCommentSuccess($form, $id, $parent));
@@ -765,12 +770,12 @@ class ThreadController extends Controller
     /**
      * Forwards the action to the comment view on a successful form submission.
      *
-     * @param FormInterface $form Comment delete form
+     * @param FormInterface $form Comment state form
      * @param integer       $id   Thread id
      *
      * @return View
      */
-    protected function onRemoveThreadCommentSuccess(FormInterface $form, $id)
+    protected function onStateThreadCommentSuccess(FormInterface $form, $id)
     {
         return RouteRedirectView::create('fos_comment_get_thread_comment', array('id' => $id, 'commentId' => $form->getData()->getId()));
     }
@@ -778,12 +783,12 @@ class ThreadController extends Controller
     /**
      * Returns a HTTP_BAD_REQUEST response when the form submission fails.
      *
-     * @param FormInterface $form Comment delete form
+     * @param FormInterface $form Comment state form
      * @param integer       $id   Thread id
      *
      * @return View
      */
-    protected function onRemoveThreadCommentError(FormInterface $form, $id)
+    protected function onStateThreadCommentError(FormInterface $form, $id)
     {
         $view = View::create()
             ->setStatusCode(Codes::HTTP_BAD_REQUEST)
@@ -792,7 +797,7 @@ class ThreadController extends Controller
                 'id' => $id,
                 'value' => $form->getData()->getState(),
             ))
-            ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment_remove'));
+            ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment_state'));
 
         return $view;
     }

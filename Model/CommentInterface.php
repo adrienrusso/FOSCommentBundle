@@ -84,6 +84,11 @@ interface CommentInterface
     public function setState($state);
 
     /**
+     * @param integer state
+     */
+    public function isState(array $states);
+
+    /**
      * Gets the previous state.
      *
      * @return integer

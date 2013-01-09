@@ -57,6 +57,13 @@ class RoleCommentAcl implements CommentAclInterface
     private $editRole;
 
     /**
+     * The role that will grant moderate permission for a comment.
+     *
+     * @var string
+     */
+    private $moderateRole;
+
+    /**
      * The role that will grant delete permission for a comment.
      *
      * @var string
@@ -78,6 +85,7 @@ class RoleCommentAcl implements CommentAclInterface
                                 $viewRole,
                                 $editRole,
                                 $deleteRole,
+                                $moderateRole,
                                 $commentClass
     )
     {
@@ -86,6 +94,7 @@ class RoleCommentAcl implements CommentAclInterface
         $this->viewRole          = $viewRole;
         $this->editRole          = $editRole;
         $this->deleteRole        = $deleteRole;
+        $this->moderateRole      = $moderateRole;
         $this->commentClass      = $commentClass;
     }
 
@@ -145,6 +154,17 @@ class RoleCommentAcl implements CommentAclInterface
     public function canDelete(CommentInterface $comment)
     {
         return $this->securityContext->isGranted($this->deleteRole);
+    }
+
+    /**
+     * Checks if the Security token is allowed to moderate the specified Comment.
+     *
+     * @param  CommentInterface $comment
+     * @return boolean
+     */
+    public function canModerate(CommentInterface $comment)
+    {
+        return $this->securityContext->isGranted($this->moderateRole);
     }
 
     /**
