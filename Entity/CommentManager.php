@@ -59,6 +59,35 @@ class CommentManager extends BaseCommentManager
         $this->class = $metadata->name;
     }
 
+    public function findCommentsByState($state = CommentInterface::STATE_PENDING, $depth = null, $sorterAlias = null)
+    {
+        $qb = $this->repository
+            ->createQueryBuilder('c')
+            ->join('c.thread', 't')
+            ->where('c.state = :state')
+            ->orderBy('c.ancestors', 'ASC')
+            ->setParameter('state', $state);
+
+        if (null !== $depth && $depth >= 0) {
+            // Queries for an additional level so templates can determine
+            // if the final 'depth' layer has children.
+
+            $qb->andWhere('c.depth < :depth')
+               ->setParameter('depth', $depth + 1);
+        }
+
+        $comments = $qb
+            ->getQuery()
+            ->execute();
+
+        if (null !== $sorterAlias) {
+            $sorter = $this->sortingFactory->getSorter($sorterAlias);
+            $comments = $sorter->sortFlat($comments);
+        }
+
+        return $comments;
+    }
+
     /**
      * Returns a flat array of comments of a specific thread.
      *

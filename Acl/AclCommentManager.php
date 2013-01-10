@@ -91,6 +91,19 @@ class AclCommentManager implements CommentManagerInterface
         return $comments;
     }
 
+    public function findCommentsByState($state = CommentInterface::STATE_PENDING, $depth = null, $sorterAlias = null)
+    {
+        $comments = $this->realManager->findCommentsByState($state, $depth, $sorterAlias);
+
+        foreach ($comments as $comment) {
+            if (!$this->commentAcl->canView($comment)) {
+                throw new AccessDeniedException();
+            }
+        }
+
+        return $comments;
+    }
+
     /**
      * {@inheritDoc}
      */
