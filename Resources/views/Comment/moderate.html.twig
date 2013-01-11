@@ -13,8 +13,10 @@
 
 {% javascripts '@FOSCommentBundle/Resources/assets/js/comments.js' %}
     <script type="text/javascript">
-        // thread id
-        var fos_comment_thread_id = '{{ id }}';
+        // enable moderation
+        var fos_comment_threads_moderate = true;
+        // threads container
+        var fos_comment_thread_container = $("#threads_container");
 
         // api base url to use for initial requests
         var fos_comment_thread_api_base_url = '{{ path('fos_comment_get_threads') }}';

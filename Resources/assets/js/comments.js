@@ -115,7 +115,7 @@
          * @param string url Optional url for the thread. Defaults to current location.
          */
         getThreadComments: function(identifier, permalink) {
-            var event = jQuery.Event('fos_comment_before_load_thread');
+            var event = window.jQuery.Event('fos_comment_before_load_thread');
 
             event.identifier = identifier;
             event.params = {
@@ -328,6 +328,35 @@
             );
 
             FOS_COMMENT.thread_container.on('click',
+                '.fos_comment_comment_approve, .fos_comment_comment_unapprove',
+                function(e) {
+                    var form_data = $(this).data();
+
+                    // Get the form
+                    FOS_COMMENT.put(
+                        form_data.url,
+                        {},
+                        function(data) {
+                            // Post it
+                            var form = $(data).children('form')[0];
+
+                            FOS_COMMENT.post(
+                                form.action,
+                                FOS_COMMENT.serializeObject(form),
+                                function(data) {
+                                    var commentHtml = $(data);
+
+                                    var originalComment = $('#' + commentHtml.attr('id'));
+
+                                    originalComment.replaceWith(commentHtml);
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+
+            FOS_COMMENT.thread_container.on('click',
                 '.fos_comment_thread_commentable_action',
                 function(e) {
                     var form_data = $(this).data();
@@ -360,7 +389,7 @@
         appendComment: function(commentHtml, form) {
             var form_data = form.data();
 
-            if('' != form_data.parent) {
+            if('' !== form_data.parent) {
                 var form_parent = form.closest('.fos_comment_comment_form_holder');
 
                 // reply button holder
@@ -389,10 +418,9 @@
         },
 
         editComment: function(commentHtml) {
-            var commentHtml = $(commentHtml);
-            var originalCommentBody = $('#' + commentHtml.attr('id')).children('.fos_comment_comment_body');
+            var originalCommentBody = $('#' + $(commentHtml).attr('id')).children('.fos_comment_comment_body');
 
-            originalCommentBody.html(commentHtml.children('.fos_comment_comment_body').html());
+            originalCommentBody.html($(commentHtml).children('.fos_comment_comment_body').html());
         },
 
         cancelEditComment: function(commentBody) {
@@ -439,7 +467,7 @@
                 function(data) {
                     // easyXdm doesn't always serialize
                     if (typeof data != "object") {
-                        data = jQuery.parseJSON(data);
+                        data = window.jQuery.parseJSON(data);
                     }
 
                     var threadData = {};
@@ -460,7 +488,7 @@
         },
 
         setCommentCount: function(elem, threadObject) {
-            if (threadObject == undefined) {
+            if (threadObject === undefined) {
                 elem.innerHTML = '0';
 
                 return;
@@ -516,8 +544,8 @@
 
         FOS_COMMENT.get= function(url, data, success, error) {
             // make data serialization equals to that of jquery
-            var params = jQuery.param(data);
-            url += '' != params ? '?' + params : '';
+            var params = window.jQuery.param(data);
+            url += '' !== params ? '?' + params : '';
 
             this.request('GET', url, undefined, success, error);
         };
@@ -536,12 +564,12 @@
     FOS_COMMENT.base_url = window.fos_comment_thread_api_base_url;
 
     // Load the comment if there is a thread id defined.
-    if(typeof window.fos_comment_thread_id != "undefined") {
+    if(typeof window.fos_comment_thread_id !== "undefined" && typeof window.fos_comment_threads_moderate === "undefined") {
         // get the thread comments and init listeners
         FOS_COMMENT.getThreadComments(window.fos_comment_thread_id);
     }
 
-    if(typeof window.fos_comment_thread_comment_count_callback != "undefined") {
+    if(typeof window.fos_comment_thread_comment_count_callback !== "undefined") {
         FOS_COMMENT.setCommentCount = window.fos_comment_thread_comment_count_callback;
     }
 
