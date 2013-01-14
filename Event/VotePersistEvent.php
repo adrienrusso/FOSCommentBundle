@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the FOSCommentBundle package.
+ * This file is part of the FOSVoteBundle package.
  *
  * (c) FriendsOfSymfony <http://friendsofsymfony.github.com/>
  *
@@ -17,7 +17,7 @@ namespace FOS\CommentBundle\Event;
  *
  * @author Tim Nagel <tim@nagel.com.au>
  */
-class CommentPersistEvent extends CommentEvent
+class VotePersistEvent extends VoteEvent
 {
     /**
      * @var bool
