@@ -20,6 +20,8 @@ use FOS\CommentBundle\Acl\RoleCommentAcl;
  */
 class RoleCommentAclTest extends AbstractRoleAcl
 {
+    private $moderateRole;
+
     public function setup()
     {
         parent::setUp();
@@ -29,6 +31,7 @@ class RoleCommentAclTest extends AbstractRoleAcl
             $this->viewRole,
             $this->editRole,
             $this->deleteRole,
+            $this->moderateRole,
             '');
         $this->passObject = $this->getMock('FOS\CommentBundle\Model\CommentInterface');
     }
