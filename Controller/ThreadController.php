@@ -482,7 +482,7 @@ class ThreadController extends Controller
 
         if ($form->isValid()) {
 
-            if ($this->container->getParameter("fos_comment.moderate")) {
+            if ($this->container->getParameter("fos_comment.moderate") && !$this->container->get('fos_comment.acl.comment.roles')->canModerate($comment)) {
                 $comment->setState($comment::STATE_PENDING);
             }
 
