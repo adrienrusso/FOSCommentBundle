@@ -1,3 +1,5 @@
+{% set depth = depth|default(0) %}
+{% set view = view|default('tree') %}
 <table class="records_list dataTable" cellspacing="0">
     <thead>
         <tr>
@@ -9,7 +11,7 @@
     </thead>
     <tbody>
     {% for comment in comments %}
-        {% include "FOSCommentBundle:Moderate:comment.html.twig" with { "children": comment.children, "comment": comment.comment, "depth": depth, "view": view } %}
+        {% include "FOSCommentBundle:Comment:comment.html.twig" with { "comment": comment, "depth": depth, "view": view } %}
     {% endfor %}
     </tbody>
 </table>
