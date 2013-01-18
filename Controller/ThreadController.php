@@ -220,13 +220,15 @@ class ThreadController extends Controller
     /**
      * Get a comment of a thread.
      *
-     * @param string $id        Id of the thread
-     * @param mixed  $commentId Id of the comment
+     * @param string  $id        Id of the thread
+     * @param mixed   $commentId Id of the comment
+     * @param integer $modereate Enabled moderation
      *
      * @return View
      */
     public function getThreadCommentAction($id, $commentId)
     {
+        $request = $this->getRequest();
         $thread = $this->container->get('fos_comment.manager.thread')->findThreadById($id);
         $comment = $this->container->get('fos_comment.manager.comment')->findCommentById($commentId);
 
@@ -236,7 +238,7 @@ class ThreadController extends Controller
 
         $view = View::create()
             ->setData(array('comment' => $comment, 'thread' => $thread))
-            ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment'));
+            ->setTemplate(new TemplateReference('FOSCommentBundle', ($request->query->get('moderate') == 0 ? 'Thread' : 'Comment'), 'comment'));
 
         return $this->getViewHandler()->handle($view);
     }
@@ -254,6 +256,7 @@ class ThreadController extends Controller
     {
         $thread = $this->container->get('fos_comment.manager.thread')->findThreadById($id);
         $comment = $this->container->get('fos_comment.manager.comment')->findCommentById($commentId);
+        $moderate = $request->query->has('moderate') ? $request->query->get('moderate') : 0;
 
         if (null === $thread || null === $comment || $comment->getThread() !== $thread) {
             throw new NotFoundHttpException(sprintf("No comment with id '%s' found for thread with id '%s'", $commentId, $id));
@@ -265,7 +268,7 @@ class ThreadController extends Controller
         $form->setData($comment);
 
         $view = View::create()
-            ->setData(array('form' => $form, 'id' => $id, 'commentId' => $commentId))
+            ->setData(array('form' => $form, 'id' => $id, 'commentId' => $commentId, 'moderate' => $moderate))
             ->setTemplate(new TemplateReference('FOSCommentBundle', 'Thread', 'comment_state'));
 
         return $this->getViewHandler()->handle($view);
@@ -285,6 +288,7 @@ class ThreadController extends Controller
         $manager = $this->container->get('fos_comment.manager.comment');
         $thread = $this->container->get('fos_comment.manager.thread')->findThreadById($id);
         $comment = $manager->findCommentById($commentId);
+        $moderate = $request->query->has('moderate') ? $request->query->get('moderate') : 0;
 
         if (null === $thread || null === $comment || $comment->getThread() !== $thread) {
             throw new NotFoundHttpException(sprintf("No comment with id '%s' found for thread with id '%s'", $commentId, $id));
@@ -298,7 +302,7 @@ class ThreadController extends Controller
         if ($form->isValid()) {
             $manager->saveComment($comment);
 
-            return $this->getViewHandler()->handle($this->onStateThreadCommentSuccess($form, $id));
+            return $this->getViewHandler()->handle($this->onStateThreadCommentSuccess($form, $id, $moderate));
         }
 
         return $this->getViewHandler()->handle($this->onStateThreadCommentError($form, $id));
@@ -776,14 +780,15 @@ class ThreadController extends Controller
     /**
      * Forwards the action to the comment view on a successful form submission.
      *
-     * @param FormInterface $form Comment state form
-     * @param integer       $id   Thread id
+     * @param FormInterface $form      Comment state form
+     * @param integer       $id        Thread id
+     * @param integer       $moderate  Enabled moderation
      *
      * @return View
      */
-    protected function onStateThreadCommentSuccess(FormInterface $form, $id)
+    protected function onStateThreadCommentSuccess(FormInterface $form, $id, $moderate)
     {
-        return RouteRedirectView::create('fos_comment_get_thread_comment', array('id' => $id, 'commentId' => $form->getData()->getId()));
+        return RouteRedirectView::create('fos_comment_get_thread_comment', array('id' => $id, 'commentId' => $form->getData()->getId(), 'moderate' => $moderate));
     }
 
     /**

@@ -1,0 +1,38 @@
+{% set index = (loop is defined ? loop.index : comment.thread.numComments)|default(0) %}
+<tr id="fos_comment_{{ comment.id }}">
+    <td>{{ comment.createdAt|date('Y-m-d h:i:s') }}</td>
+    <td>{{ comment.displayName }}</td>
+    <td>{{ comment.body | raw  }}</td>
+    <td>
+        {#% block fos_comment_comment_metas_edit %}
+            {% if fos_comment_can_edit_comment(comment) %}
+                <a data-url="{{ url("fos_comment_edit_thread_comment", {"id": comment.thread.id, "commentId": comment.id}) }}" class="fos_comment_comment_edit_show_form has-tip tip-top success radius label" data-selector="tooltipom2gshsemi" title="Edit"><i class="icon-pencil"></i></a>
+            {% endif %}
+        {% endblock fos_comment_comment_metas_edit %#}
+
+        {% block fos_comment_comment_metas_delete %}
+            {% if fos_comment_can_delete_comment(comment) %}
+                {% if comment is fos_comment_in_state(constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_DELETED')) %}
+                    {# undelete #}
+                    <a data-url="{{ url("fos_comment_put_thread_comment_state", {"id": comment.thread.id, "commentId": comment.id, "value": constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_VISIBLE'), "moderate": 1 }) }}" title="{{ 'fos_comment_comment_undelete'|trans({}, 'FOSCommentBundle') }}" class="fos_comment_comment_state has-tip tip-top success radius label"><i class="icon-refresh"></i></a>
+                {% else %}
+                    {# delete #}
+                    <a data-url="{{ url("fos_comment_put_thread_comment_state", {"id": comment.thread.id, "commentId": comment.id, "value":  constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_DELETED'), "moderate": 1}) }}" title="{{ 'fos_comment_comment_delete'|trans({}, 'FOSCommentBundle') }}" class="fos_comment_comment_state  has-tip tip-top success radius label"><i class="icon-remove"></i></a>
+                {% endif %}
+            {% endif %}
+        {% endblock fos_comment_comment_metas_delete %}
+
+        {% block fos_comment_comment_metas_moderate %}
+            {% if fos_comment_can_moderate_comment(comment) %}
+                {% if comment is fos_comment_in_state(constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_PENDING')) %}
+                    {# approve #}
+                    <a data-url="{{ url("fos_comment_put_thread_comment_state", {"id": comment.thread.id, "commentId": comment.id, "value": constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_VISIBLE'), "moderate": 1 }) }}" title="{{ 'fos_comment_comment_approve'|trans({}, 'FOSCommentBundle') }}" class="fos_comment_comment_state has-tip tip-top success radius label"><i class="icon-checkmark"></i></a>
+                {% else %}
+                    {# unapprove #}
+                    <a data-url="{{ url("fos_comment_put_thread_comment_state", {"id": comment.thread.id, "commentId": comment.id, "value":  constant('FOS\\CommentBundle\\Model\\CommentInterface::STATE_PENDING'), "moderate": 1}) }}" title="{{ 'fos_comment_comment_unapprove'|trans({}, 'FOSCommentBundle') }}" class="fos_comment_comment_state has-tip tip-top success radius label"><i class="icon-checkmark-2"></i></a>
+                {% endif %}
+            {% endif %}
+        {% endblock fos_comment_comment_metas_moderate %}
+
+    </td>
+</tr>

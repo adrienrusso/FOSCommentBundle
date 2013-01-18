@@ -24,3 +24,6 @@ fos_comment_comment_edit:                     Editer
 fos_comment_comment_delete:                   Supprimer le commentaire
 fos_comment_comment_undelete:                 Restaurer le commentaire
 fos_comment_comment_deleted:                  "[Supprimé]"
+
+fos_comment_comment_approve:                  Approuver le commentaire
+fos_comment_comment_unapprove:                Désapprouver le commentaire

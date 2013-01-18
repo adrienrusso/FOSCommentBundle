@@ -1,0 +1,15 @@
+<table class="records_list dataTable" cellspacing="0">
+    <thead>
+        <tr>
+            <th>{{ 'grid.thead.createdAt'|trans({}, 'grid') }}</th>
+            <th>{{ 'grid.thead.author'|trans({}, 'grid') }}</th>
+            <th>{{ 'grid.thead.content'|trans({}, 'grid') }}</th>
+            <th>{{ 'grid.thead.actions'|trans({}, 'grid') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for comment in comments %}
+        {% include "FOSCommentBundle:Moderate:comment.html.twig" with { "children": comment.children, "comment": comment.comment, "depth": depth, "view": view } %}
+    {% endfor %}
+    </tbody>
+</table>

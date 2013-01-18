@@ -37,6 +37,7 @@ class CommentController extends Controller
         $sorter = $request->get('sorter');
         $comments = $this->container->get('fos_comment.manager.comment')->findCommentsByState(CommentInterface::STATE_PENDING, $displayDepth, $sorter);
 
+       // die(var_dump($comments));
         return $this->container->get('templating')->renderResponse(
             'FOSCommentBundle:Comment:moderate.html.twig',
             array(
