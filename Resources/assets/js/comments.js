@@ -159,7 +159,11 @@
                         serializedData,
                         // success
                         function(data, statusCode) {
-                            FOS_COMMENT.appendComment(data, that);
+                            if (that.closest('.show-comments-message').next('.fos_comment_comment_replies').length > 0) {
+                                FOS_COMMENT.appendReply(data, that);
+                            } else {
+                                FOS_COMMENT.appendComment(data, that);
+                            }
                             that.trigger('fos_comment_new_comment', data);
                         },
                         // error
@@ -181,6 +185,8 @@
                 function(e) {
                     var form_data = $(this).data();
                     var that = $(this);
+
+                    that.hide();
 
                     if(that.closest('.fos_comment_comment_reply').hasClass('fos_comment_replying')) {
                         return that;
@@ -210,6 +216,8 @@
                         return;
                     }
 
+                    $('.fos_comment_comment_reply_show_form').show();
+
                     form_holder.closest('.fos_comment_comment_reply').removeClass('fos_comment_replying');
                     form_holder.remove();
                 }
@@ -220,12 +228,13 @@
                 function(e) {
                     var form_data = $(this).data();
                     var that = this;
+                    $(this).hide();
 
                     FOS_COMMENT.get(
                         form_data.url,
                         {},
                         function(data) {
-                            var commentBody = $(that).parent().next();
+                            var commentBody = $(that).next('p');
 
                             // save the old comment for the cancel function
                             commentBody.data('original', commentBody.html());
@@ -247,7 +256,9 @@
                         FOS_COMMENT.serializeObject(this),
                         // success
                         function(data) {
-                            FOS_COMMENT.editComment(data);
+                            that.closest('.fos_comment_comment_form_holder').parent().html(that.find('textarea').val());
+                            $('.fos_comment_comment_edit_show_form').show();
+                            //FOS_COMMENT.editComment(data);
                             that.trigger('fos_comment_edit_comment', data);
                         },
 
@@ -266,7 +277,9 @@
             FOS_COMMENT.thread_container.on('click',
                 '.fos_comment_comment_edit_cancel',
                 function(e) {
-                    FOS_COMMENT.cancelEditComment($(this).parents('.fos_comment_comment_body'));
+                    $(this).closest('.fos_comment_comment_form_holder').parent().html( $(this).closest('.fos_comment_comment_form_holder').parent().data('original'));
+                    $('.fos_comment_comment_edit_show_form').show();
+                    //FOS_COMMENT.cancelEditComment($(this).parents('.fos_comment_comment_body'));
                 }
             );
 
@@ -307,7 +320,7 @@
                     $(this).trigger(event);
 
                     if (event.isDefaultPrevented()) {
-                        return
+                        return;
                     }
 
                     // Get the form
@@ -415,6 +428,39 @@
             } else {
                 // Insert the comment
                 form.after(commentHtml);
+                form.trigger('fos_comment_add_comment', commentHtml);
+
+                // "reset" the form
+                form = $(form[0]);
+                form[0].reset();
+                form.children('.fos_comment_form_errors').remove();
+            }
+        },
+
+        appendReply: function(commentHtml, form) {
+            var form_data = form.data();
+
+            if('' !== form_data.parent) {
+                var form_parent = form.closest('.fos_comment_comment_form_holder');
+
+                // reply button holder
+                var reply_button_holder = form.closest('.fos_comment_comment_reply');
+
+                var comment_element = form.closest('.show-comments-message').next('.fos_comment_comment_replies');
+
+                reply_button_holder.removeClass('fos_comment_replying');
+
+                comment_element.append(commentHtml);
+                $('.fos_comment_comment_reply_show_form').show();
+                comment_element.find('.show-comments-cont').html('');
+                comment_element.trigger('fos_comment_add_comment', commentHtml);
+
+                // Remove the form
+                form_parent.remove();
+            } else {
+                $('.fos_comment_comment_reply_show_form').show();
+                form.closest('.show-comments-message').next('.fos_comment_comment_replies').append(commentHtml);
+                form.closest('.show-comments-message').next('.fos_comment_comment_replies').find('.show-comments-cont').html('');
                 form.trigger('fos_comment_add_comment', commentHtml);
 
                 // "reset" the form
