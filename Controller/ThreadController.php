@@ -22,6 +22,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use FOS\UserBundle\Entity\User;
 
 /**
  * Restful controller for the Threads.
@@ -433,7 +434,7 @@ class ThreadController extends Controller
 
         if ($this->container->getParameter("fos_comment.moderate")) {
             $comments = array_filter($comments, function($element){
-                return $this->container->get('fos_comment.acl.comment.roles')->canModerate($element['comment']) || (!$element['comment']->isState(array($element['comment']::STATE_PENDING)) || ($element['comment']->getAuthor()->getId() == $this->container->get('security.context')->getToken()->getUser()->getId()));
+                return $this->container->get('fos_comment.acl.comment.roles')->canModerate($element['comment']) || (!$element['comment']->isState(array($element['comment']::STATE_PENDING)) || ($element['comment']->getAuthor() instanceof User && $element['comment']->getAuthor()->getId() == $this->container->get('security.context')->getToken()->getUser()->getId()));
             });
         }
 
