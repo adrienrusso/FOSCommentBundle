@@ -234,8 +234,8 @@
                         form_data.url,
                         {},
                         function(data) {
-                            var commentBody = $(that).next('p');
-
+                            var commentBody = $(that).parent().parent().find('p').first();
+                            console.log(commentBody);
                             // save the old comment for the cancel function
                             commentBody.data('original', commentBody.html());
 
@@ -277,7 +277,7 @@
             FOS_COMMENT.thread_container.on('click',
                 '.fos_comment_comment_edit_cancel',
                 function(e) {
-                    $(this).closest('.fos_comment_comment_form_holder').parent().html( $(this).closest('.fos_comment_comment_form_holder').parent().data('original'));
+                    $(this).closest('p').html($(this).closest('p').data('original'));
                     $('.fos_comment_comment_edit_show_form').show();
                     //FOS_COMMENT.cancelEditComment($(this).parents('.fos_comment_comment_body'));
                 }
