@@ -340,6 +340,7 @@
                                     var originalComment = $('#' + commentHtml.attr('id'));
 
                                     originalComment.replaceWith(commentHtml);
+                                    $('.tooltip').hide();
                                 }
                             );
                         }
@@ -364,6 +365,7 @@
                                 form.action,
                                 FOS_COMMENT.serializeObject(form),
                                 function(data) {
+
                                     var commentHtml = $(data);
 
                                     var originalComment = $('#' + commentHtml.attr('id'));
