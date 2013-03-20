@@ -36,6 +36,10 @@ class CommentController extends Controller
         $displayDepth = $request->query->get('displayDepth');
         $sorter = $request->get('sorter');
         $comments = $this->container->get('fos_comment.manager.comment')->findCommentsByState(CommentInterface::STATE_PENDING, $displayDepth, $sorter);
+        foreach ($comments as $comment) {
+            $slug = explode('/', $comment->getThread()->getPermalink())[5];
+            $comment->getThread()->setVideo($this->container->get("itv_video")->getRepository()->findOneBy(array('slug' => $slug)));
+        }
 
        // die(var_dump($comments));
         return $this->container->get('templating')->renderResponse(
