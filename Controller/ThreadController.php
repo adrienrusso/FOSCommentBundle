@@ -238,6 +238,9 @@ class ThreadController extends Controller
             throw new NotFoundHttpException(sprintf("No comment with id '%s' found for thread with id '%s'", $commentId, $id));
         }
 
+        $slug = explode('/', $comment->getThread()->getPermalink())[5];
+        $comment->getThread()->setVideo($this->container->get("itv_video")->getRepository()->findOneBy(array('slug' => $slug)));
+
         $view = View::create()
             ->setData(array('comment' => $comment, 'thread' => $thread))
             ->setTemplate(new TemplateReference('FOSCommentBundle', ($request->query->get('moderate') == 0 ? 'Thread' : 'Comment'), 'comment'));
