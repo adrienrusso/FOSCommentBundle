@@ -437,7 +437,7 @@ class ThreadController extends Controller
 
         if ($this->container->getParameter("fos_comment.moderate")) {
             $comments = array_filter($comments, function($element){
-                return $this->container->get('fos_comment.acl.comment.roles')->canModerate($element['comment']) || (!$element['comment']->isState(array($element['comment']::STATE_PENDING)) || ($element['comment']->getAuthor() instanceof User && $element['comment']->getAuthor()->getId() == $this->container->get('security.context')->getToken()->getUser()->getId()));
+                return $this->container->get('fos_comment.acl.comment.roles')->canModerate($element['comment']) || (!$element['comment']->isState(array($element['comment']::STATE_PENDING, $element['comment']::STATE_DELETED)) || (!$element['comment']->isState(array($element['comment']::STATE_DELETED)) && $element['comment']->getAuthor() instanceof User && $element['comment']->getAuthor()->getId() == $this->container->get('security.context')->getToken()->getUser()->getId()));
             });
         }
 
