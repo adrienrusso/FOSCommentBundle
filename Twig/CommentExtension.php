@@ -181,7 +181,7 @@ class CommentExtension extends \Twig_Extension
             return false;
         }
 
-        return $this->commentAcl->canModerate($comment) && $comment->isState(array($comment::STATE_PENDING, $comment::STATE_VISIBLE));
+        return $this->commentAcl->canModerate($comment) && $comment->isState(array($comment::STATE_PENDING, $comment::STATE_VISIBLE, $comment::STATE_DELETED));
     }
 
     /**
