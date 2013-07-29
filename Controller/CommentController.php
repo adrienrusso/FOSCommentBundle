@@ -38,7 +38,7 @@ class CommentController extends Controller
         $comments = $this->container->get('fos_comment.manager.comment')->findCommentsByState(CommentInterface::STATE_PENDING, $displayDepth, $sorter);
         foreach ($comments as $comment) {
             $id = explode('-', $comment->getThread()->getId())[1];
-            $comment->getThread()->setVideo($this->container->get("itv_video")->getRepository()->findOneBy(array('id' => $id)));
+            $comment->getThread()->setVideo($this->container->get("itv_video")->findOneBy(array('id' => $id)));
         }
 
        // die(var_dump($comments));

@@ -239,7 +239,7 @@ class ThreadController extends Controller
         }
 
         $slug = explode('/', $comment->getThread()->getPermalink())[5];
-        $comment->getThread()->setVideo($this->container->get("itv_video")->getRepository()->findOneBy(array('slug' => $slug)));
+        $comment->getThread()->setVideo($this->container->get("itv_video")->findOneBy(array('slug' => $slug)));
 
         $view = View::create()
             ->setData(array('comment' => $comment, 'thread' => $thread))
