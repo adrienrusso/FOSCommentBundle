@@ -227,7 +227,7 @@
                 '.fos_comment_comment_edit_show_form',
                 function(e) {
                     var form_data = $(this).data();
-                    var that = this;
+                    var that = $(this);
                     $(this).hide();
 
                     FOS_COMMENT.get(
@@ -241,6 +241,8 @@
 
                             // show the edit form
                             commentBody.html(data);
+
+                            that.trigger('fos_comment_show_edit_form', data);
                         }
                     );
                 }
@@ -295,7 +297,7 @@
                         {},
                         function(data) {
                             // Post it
-                            var form = $(data).children('form')[0];
+                            var form = $($.trim(data)).children('form')[0];
                             var form_data = $(form).data();
 
                             FOS_COMMENT.post(
@@ -329,13 +331,13 @@
                         {},
                         function(data) {
                             // Post it
-                            var form = $(data).children('form')[0];
+                            var form = $($.trim(data)).children('form')[0];
 
                             FOS_COMMENT.post(
                                 form.action,
                                 FOS_COMMENT.serializeObject(form),
                                 function(data) {
-                                    var commentHtml = $(data);
+                                    var commentHtml = $($.trim(data));
 
                                     var originalComment = $('#' + commentHtml.attr('id'));
 
@@ -389,13 +391,13 @@
                         {},
                         function(data) {
                             // Post it
-                            var form = $(data).children('form')[0];
+                            var form = $($.trim(data)).children('form')[0];
 
                             FOS_COMMENT.post(
                                 form.action,
                                 FOS_COMMENT.serializeObject(form),
                                 function(data) {
-                                    var form = $(data).children('form')[0];
+                                    var form = $($.trim(data)).children('form')[0];
                                     var threadId = $(form).data().fosCommentThreadId;
 
                                     // reload the intire thread
