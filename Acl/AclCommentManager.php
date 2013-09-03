@@ -165,6 +165,26 @@ class AclCommentManager implements CommentManagerInterface
     }
 
     /**
+     * Find comments by...
+     *
+     * @param array $filter Some filters....
+     *
+     * @return Comment or null
+     **/
+    public function findCommentBy($filter)
+    {
+        $comments = $this->realManager->findCommentBy($filter);
+
+        foreach ($comments as $comment) {
+            if (!$this->commentAcl->canView($comment)) {
+                throw new AccessDeniedException();
+            }
+        }
+
+        return $comments;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function createComment(ThreadInterface $thread, CommentInterface $parent = null)

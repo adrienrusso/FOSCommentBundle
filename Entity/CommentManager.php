@@ -175,6 +175,18 @@ class CommentManager extends BaseCommentManager
     }
 
     /**
+     * Find comments by...
+     *
+     * @param array $filter Some filters....
+     *
+     * @return Comment or null
+     **/
+    public function findCommentBy($filter)
+    {
+        return $this->repository->findBy($filter);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function isNewComment(CommentInterface $comment)
